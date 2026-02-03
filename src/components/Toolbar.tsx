@@ -1,13 +1,12 @@
 import React from 'react';
-import { Download, Save, History, FileText, Share2 } from 'lucide-react';
+import { Download, Save, FileText } from 'lucide-react';
 
 interface ToolbarProps {
     onDownload: () => void;
     onSave: () => void;
-    activeView: 'form' | 'preview';
 }
 
-const Toolbar: React.FC<ToolbarProps> = ({ onDownload, onSave, activeView }) => {
+const Toolbar: React.FC<ToolbarProps> = ({ onDownload, onSave }) => {
     return (
         <div className="bg-white border-t border-slate-200 p-4 sticky bottom-0 z-40 md:relative md:border-t-0 md:border-b md:bg-transparent md:p-0 md:mb-6">
             <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">

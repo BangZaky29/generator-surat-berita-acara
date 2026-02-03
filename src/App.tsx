@@ -136,7 +136,6 @@ function App() {
             <Toolbar
               onDownload={handleDownload}
               onSave={() => setShowSaveModal(true)}
-              activeView={activeView}
             />
             <div className="flex flex-col items-center overflow-hidden pb-12">
               <div className="origin-top scale-[0.45] sm:scale-[0.7] md:scale-90 lg:scale-100 transition-all duration-500 flex justify-center">

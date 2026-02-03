@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, FileText, Edit3 } from 'lucide-react';
+import { FileText, Edit3 } from 'lucide-react';
 
 interface MobileActionButtonProps {
     view: 'form' | 'preview';

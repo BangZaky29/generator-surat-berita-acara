@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { History, Trash2, Clock, ChevronDown } from 'lucide-react';
+import { History, Trash2, Clock, ChevronDown, FileDown } from 'lucide-react';
 import type { HistoryItem } from '../types';
 
 interface HistoryDropdownProps {
@@ -74,15 +74,20 @@ const HistoryDropdown: React.FC<HistoryDropdownProps> = ({ history, onSelect, on
                                     <p className="text-sm font-semibold text-slate-700 truncate">{item.label}</p>
                                     <p className="text-[10px] text-slate-400 font-medium">{new Date(item.timestamp).toLocaleString()}</p>
                                 </div>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        onDelete(item.id, item.label);
-                                    }}
-                                    className="p-2 text-slate-300 hover:text-red-500 transition-colors"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
+                                <div className="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                                    <div className="p-2 text-primary-500 bg-primary-50 rounded-lg">
+                                        <FileDown className="w-4 h-4" />
+                                    </div>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onDelete(item.id, item.label);
+                                        }}
+                                        className="p-2 text-slate-300 hover:text-red-500 transition-colors"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
                             </div>
                         ))
                     ) : (

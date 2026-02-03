@@ -20,8 +20,16 @@ const TTDUpload: React.FC<TTDUploadProps> = ({ onUpload, currentImage }) => {
         if (e.cancelable) e.preventDefault();
         setIsDrawing(true);
         const rect = canvas.getBoundingClientRect();
-        const x = ('touches' in e) ? e.touches[0].clientX - rect.left : (e as React.MouseEvent).clientX - rect.left;
-        const y = ('touches' in e) ? e.touches[0].clientY - rect.top : (e as React.MouseEvent).clientY - rect.top;
+
+        // Calculate scaling factors for responsive canvas
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        const clientX = ('touches' in e) ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+        const clientY = ('touches' in e) ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+
+        const x = (clientX - rect.left) * scaleX;
+        const y = (clientY - rect.top) * scaleY;
 
         ctx.beginPath();
         ctx.moveTo(x, y);
@@ -31,14 +39,23 @@ const TTDUpload: React.FC<TTDUploadProps> = ({ onUpload, currentImage }) => {
     };
 
     const draw = (e: React.MouseEvent | React.TouchEvent) => {
-        if (!isDrawing || !canvasRef.current) return;
-        const ctx = canvasRef.current.getContext('2d');
+        const canvas = canvasRef.current;
+        if (!isDrawing || !canvas) return;
+        const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
         if (e.cancelable) e.preventDefault();
-        const rect = canvasRef.current.getBoundingClientRect();
-        const x = ('touches' in e) ? e.touches[0].clientX - rect.left : (e as React.MouseEvent).clientX - rect.left;
-        const y = ('touches' in e) ? e.touches[0].clientY - rect.top : (e as React.MouseEvent).clientY - rect.top;
+        const rect = canvas.getBoundingClientRect();
+
+        // Calculate scaling factors for responsive canvas
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        const clientX = ('touches' in e) ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+        const clientY = ('touches' in e) ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+
+        const x = (clientX - rect.left) * scaleX;
+        const y = (clientY - rect.top) * scaleY;
 
         ctx.lineTo(x, y);
         ctx.stroke();
