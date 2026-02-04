@@ -23,6 +23,64 @@ interface FormInputProps {
     onChange: (data: SuratBeritaAcaraData) => void;
 }
 
+// ✅ PINDAHKAN KE LUAR - Section Component
+interface SectionProps {
+    id: string;
+    title: string;
+    icon: any;
+    children: React.ReactNode;
+    activeSection: string | null;
+    setActiveSection: (id: string | null) => void;
+}
+
+const Section: React.FC<SectionProps> = ({ id, title, icon: Icon, children, activeSection, setActiveSection }) => {
+    const isOpen = activeSection === id;
+
+    return (
+        <div className={`bg-white rounded-3xl border transition-all duration-300 overflow-hidden ${isOpen ? 'border-primary-200 shadow-lg ring-1 ring-primary-50' : 'border-slate-200 shadow-soft hover:border-primary-100'}`}>
+            <button
+                onClick={() => setActiveSection(isOpen ? null : id)}
+                className={`w-full px-6 py-5 flex items-center justify-between transition-colors ${isOpen ? 'bg-primary-50/50' : 'bg-slate-50 hover:bg-white'}`}
+            >
+                <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-xl shadow-sm flex items-center justify-center transition-all ${isOpen ? 'bg-primary-600 text-white shadow-primary-200 scale-110' : 'bg-white text-primary-600'}`}>
+                        <Icon className="w-5 h-5" />
+                    </div>
+                    <h3 className={`text-sm font-bold uppercase tracking-wider transition-colors ${isOpen ? 'text-primary-900' : 'text-slate-800'}`}>{title}</h3>
+                </div>
+                <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-500 ${isOpen ? 'rotate-180 text-primary-500' : ''}`} />
+            </button>
+
+            <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[2000px] opacity-100 py-6' : 'max-h-0 opacity-0 overflow-hidden py-0'}`}>
+                <div className="px-6 space-y-6">
+                    {children}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// ✅ PINDAHKAN KE LUAR - InputField Component
+interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    label: string;
+    icon: any;
+}
+
+const InputField: React.FC<InputFieldProps> = ({ label, icon: Icon, ...props }) => (
+    <div className="space-y-1.5">
+        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">{label}</label>
+        <div className="relative group/input">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-primary-500 transition-colors">
+                <Icon className="w-4 h-4" />
+            </div>
+            <input
+                {...props}
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium text-slate-700 outline-none focus:bg-white focus:border-primary-400 focus:ring-4 focus:ring-primary-400/10 transition-all placeholder:text-slate-300"
+            />
+        </div>
+    </div>
+);
+
 const FormInput: React.FC<FormInputProps> = ({ data, onChange }) => {
     const [activeSection, setActiveSection] = useState<string | null>('kop');
 
@@ -75,51 +133,9 @@ const FormInput: React.FC<FormInputProps> = ({ data, onChange }) => {
         onChange({ ...data, isiBeritaAcara: newIsi });
     };
 
-    const Section = ({ id, title, icon: Icon, children }: { id: string, title: string, icon: any, children: React.ReactNode }) => {
-        const isOpen = activeSection === id;
-
-        return (
-            <div className={`bg-white rounded-3xl border transition-all duration-300 overflow-hidden ${isOpen ? 'border-primary-200 shadow-lg ring-1 ring-primary-50' : 'border-slate-200 shadow-soft hover:border-primary-100'}`}>
-                <button
-                    onClick={() => setActiveSection(isOpen ? null : id)}
-                    className={`w-full px-6 py-5 flex items-center justify-between transition-colors ${isOpen ? 'bg-primary-50/50' : 'bg-slate-50 hover:bg-white'}`}
-                >
-                    <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-xl shadow-sm flex items-center justify-center transition-all ${isOpen ? 'bg-primary-600 text-white shadow-primary-200 scale-110' : 'bg-white text-primary-600'}`}>
-                            <Icon className="w-5 h-5" />
-                        </div>
-                        <h3 className={`text-sm font-bold uppercase tracking-wider transition-colors ${isOpen ? 'text-primary-900' : 'text-slate-800'}`}>{title}</h3>
-                    </div>
-                    <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-500 ${isOpen ? 'rotate-180 text-primary-500' : ''}`} />
-                </button>
-
-                <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[2000px] opacity-100 py-6' : 'max-h-0 opacity-0 overflow-hidden py-0'}`}>
-                    <div className="px-6 space-y-6">
-                        {children}
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
-    const InputField = ({ label, icon: Icon, ...props }: any) => (
-        <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">{label}</label>
-            <div className="relative group/input">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-primary-500 transition-colors">
-                    <Icon className="w-4 h-4" />
-                </div>
-                <input
-                    {...props}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium text-slate-700 outline-none focus:bg-white focus:border-primary-400 focus:ring-4 focus:ring-primary-400/10 transition-all placeholder:text-slate-300"
-                />
-            </div>
-        </div>
-    );
-
     return (
         <div className="space-y-4 pb-20">
-            <Section id="kop" title="Kop Surat Perusahaan" icon={Building2}>
+            <Section id="kop" title="Kop Surat Perusahaan" icon={Building2} activeSection={activeSection} setActiveSection={setActiveSection}>
                 <div className="mb-4">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Logo Perusahaan</label>
                     <div className="flex items-center gap-4">
@@ -186,7 +202,7 @@ const FormInput: React.FC<FormInputProps> = ({ data, onChange }) => {
                 />
             </Section>
 
-            <Section id="info" title="Informasi Surat" icon={FileSignature}>
+            <Section id="info" title="Informasi Surat" icon={FileSignature} activeSection={activeSection} setActiveSection={setActiveSection}>
                 <InputField
                     label="Judul Surat"
                     icon={Layout}
@@ -218,7 +234,7 @@ const FormInput: React.FC<FormInputProps> = ({ data, onChange }) => {
                 </div>
             </Section>
 
-            <Section id="pihak1" title="Pihak Pertama (Pembuat)" icon={User}>
+            <Section id="pihak1" title="Pihak Pertama (Pembuat)" icon={User} activeSection={activeSection} setActiveSection={setActiveSection}>
                 <InputField
                     label="Nama Lengkap"
                     icon={User}
@@ -249,7 +265,7 @@ const FormInput: React.FC<FormInputProps> = ({ data, onChange }) => {
                 </div>
             </Section>
 
-            <Section id="pihak2" title="Pihak Kedua (Tujuan)" icon={User}>
+            <Section id="pihak2" title="Pihak Kedua (Tujuan)" icon={User} activeSection={activeSection} setActiveSection={setActiveSection}>
                 <InputField
                     label="Nama / Perusahaan"
                     icon={User}
@@ -280,7 +296,7 @@ const FormInput: React.FC<FormInputProps> = ({ data, onChange }) => {
                 </div>
             </Section>
 
-            <Section id="isi" title="Isi Berita Acara" icon={MessageSquare}>
+            <Section id="isi" title="Isi Berita Acara" icon={MessageSquare} activeSection={activeSection} setActiveSection={setActiveSection}>
                 <div className="space-y-4">
                     {data.isiBeritaAcara.map((point, index) => (
                         <div key={index} className="flex gap-3 items-start group">
@@ -310,7 +326,7 @@ const FormInput: React.FC<FormInputProps> = ({ data, onChange }) => {
                 </div>
             </Section>
 
-            <Section id="penutup" title="Paragraf Penutup" icon={MessageSquare}>
+            <Section id="penutup" title="Paragraf Penutup" icon={MessageSquare} activeSection={activeSection} setActiveSection={setActiveSection}>
                 <div className="space-y-2">
                     <p className="text-[10px] text-slate-400 font-medium italic">Paragraf ini akan muncul otomatis sebelum tanda tangan.</p>
                     <textarea
@@ -321,7 +337,7 @@ const FormInput: React.FC<FormInputProps> = ({ data, onChange }) => {
                 </div>
             </Section>
 
-            <Section id="ttd" title="Tanda Tangan & Stempel" icon={FileSignature}>
+            <Section id="ttd" title="Tanda Tangan & Stempel" icon={FileSignature} activeSection={activeSection} setActiveSection={setActiveSection}>
                 <div className="space-y-6">
                     <div>
                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Upload / Gambar TTD</label>
