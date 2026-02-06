@@ -101,7 +101,7 @@ const Preview: React.FC<PreviewProps> = ({ data }) => {
 
                 {/* Isi */}
                 <div className="text-sm space-y-4 mb-8">
-                    <p>Kedua belah pihak telah sepakat untuk membuat Berita Acara dengan ketentuan sebagai berikut:</p>
+                    <p>Pihak Pertama telah menjelaskan rangkaian, Alur, Regulasi, Peristiwa dan Sejenisnya Sebagai Berikut:</p>
                     <ol className="list-decimal pl-8 space-y-3">
                         {data.isiBeritaAcara.length > 0 ? (
                             data.isiBeritaAcara.map((point, idx) => (
