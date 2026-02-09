@@ -12,6 +12,7 @@ import type { SuratBeritaAcaraData, HistoryItem } from './types';
 import { getHistory, saveToHistory, deleteFromHistory, clearHistory } from './utils/localStorage';
 import { downloadPDF } from './utils/downloadPDF';
 import { generateNomorSurat } from './utils/generateNomorSurat';
+import SubscriptionGuard from './components/SubscriptionGuard';
 
 const initialData: SuratBeritaAcaraData = {
   kopSurat: {
@@ -114,101 +115,103 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Header />
+    <SubscriptionGuard featureSlug="berita-acara">
+      <div className="min-h-screen bg-slate-50">
+        <Header />
 
-      <main className="max-w-7xl mx-auto px-4 py-6 md:py-8 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <main className="max-w-7xl mx-auto px-4 py-6 md:py-8 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-          {/* Form Side */}
-          <div className={`${activeView === 'form' ? 'block' : 'hidden'} lg:block lg:col-span-5`}>
-            <HistoryDropdown
-              history={history}
-              onSelect={handleSelectHistory}
-              onDelete={handleDeleteHistory}
-              onClear={() => setShowConfirmModal({ show: true, type: 'clear' })}
-            />
-            <FormInput data={data} onChange={setData} />
-          </div>
+            {/* Form Side */}
+            <div className={`${activeView === 'form' ? 'block' : 'hidden'} lg:block lg:col-span-5`}>
+              <HistoryDropdown
+                history={history}
+                onSelect={handleSelectHistory}
+                onDelete={handleDeleteHistory}
+                onClear={() => setShowConfirmModal({ show: true, type: 'clear' })}
+              />
+              <FormInput data={data} onChange={setData} />
+            </div>
 
-          {/* Preview Side */}
-          <div className={`${activeView === 'preview' ? 'block' : 'hidden'} lg:block lg:col-span-7 sticky top-24`}>
-            <Toolbar
-              onDownload={handleDownload}
-              onSave={() => setShowSaveModal(true)}
-            />
-            <div className="flex flex-col items-center overflow-hidden pb-12">
-              <div className="origin-top scale-[0.45] sm:scale-[0.7] md:scale-90 lg:scale-100 transition-all duration-500 flex justify-center">
-                <Preview data={data} />
+            {/* Preview Side */}
+            <div className={`${activeView === 'preview' ? 'block' : 'hidden'} lg:block lg:col-span-7 sticky top-24`}>
+              <Toolbar
+                onDownload={handleDownload}
+                onSave={() => setShowSaveModal(true)}
+              />
+              <div className="flex flex-col items-center overflow-hidden pb-12">
+                <div className="origin-top scale-[0.45] sm:scale-[0.7] md:scale-90 lg:scale-100 transition-all duration-500 flex justify-center">
+                  <Preview data={data} />
+                </div>
               </div>
             </div>
+
           </div>
+        </main>
 
-        </div>
-      </main>
-
-      <MobileActionButton
-        view={activeView}
-        onClick={() => setActiveView(activeView === 'form' ? 'preview' : 'form')}
-      />
-
-      {/* Modals */}
-      <Modal
-        isOpen={showSaveModal}
-        onClose={() => setShowSaveModal(false)}
-        title="Simpan Data"
-        footer={(
-          <>
-            <button onClick={() => setShowSaveModal(false)} className="px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-700">Batal</button>
-            <button onClick={handleSave} className="px-6 py-2 bg-primary-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-primary-200 hover:bg-primary-700">Simpan</button>
-          </>
-        )}
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-slate-500 font-medium leading-relaxed">Berikan label untuk data ini agar mudah ditemukan di riwayat nanti.</p>
-          <input
-            autoFocus
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold outline-none focus:bg-white focus:border-primary-400 focus:ring-4 focus:ring-primary-400/10 transition-all"
-            placeholder="Contoh: Berita Acara Rapat Internal"
-            value={saveLabel}
-            onChange={(e) => setSaveLabel(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-          />
-        </div>
-      </Modal>
-
-      <Modal
-        isOpen={showConfirmModal.show}
-        onClose={() => setShowConfirmModal({ ...showConfirmModal, show: false })}
-        title="Konfirmasi"
-        footer={(
-          <>
-            <button onClick={() => setShowConfirmModal({ ...showConfirmModal, show: false })} className="px-4 py-2 text-sm font-bold text-slate-500">Batal</button>
-            <button
-              onClick={confirmAction}
-              className={`px-6 py-2 rounded-xl text-sm font-bold shadow-lg text-white transition-all ${showConfirmModal.type === 'import' ? 'bg-primary-600 shadow-primary-200 hover:bg-primary-700' : 'bg-red-500 shadow-red-200 hover:bg-red-600'}`}
-            >
-              {showConfirmModal.type === 'import' ? 'Ya, Impor' : 'Ya, Hapus'}
-            </button>
-          </>
-        )}
-      >
-        <p className="text-sm text-slate-600 font-medium leading-relaxed">
-          {showConfirmModal.type === 'clear' && 'Anda yakin ingin menghapus SEMUA riwayat data? Tindakan ini tidak dapat dibatalkan.'}
-          {showConfirmModal.type === 'delete' && `Anda yakin ingin menghapus "${showConfirmModal.targetLabel}" dari riwayat?`}
-          {showConfirmModal.type === 'import' && `Anda yakin ingin memuat data "${showConfirmModal.targetItem?.label}"? Data yang belum tersimpan akan hilang.`}
-        </p>
-      </Modal>
-
-      {/* Notification */}
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
+        <MobileActionButton
+          view={activeView}
+          onClick={() => setActiveView(activeView === 'form' ? 'preview' : 'form')}
         />
-      )}
-    </div>
+
+        {/* Modals */}
+        <Modal
+          isOpen={showSaveModal}
+          onClose={() => setShowSaveModal(false)}
+          title="Simpan Data"
+          footer={(
+            <>
+              <button onClick={() => setShowSaveModal(false)} className="px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-700">Batal</button>
+              <button onClick={handleSave} className="px-6 py-2 bg-primary-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-primary-200 hover:bg-primary-700">Simpan</button>
+            </>
+          )}
+        >
+          <div className="space-y-4">
+            <p className="text-sm text-slate-500 font-medium leading-relaxed">Berikan label untuk data ini agar mudah ditemukan di riwayat nanti.</p>
+            <input
+              autoFocus
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold outline-none focus:bg-white focus:border-primary-400 focus:ring-4 focus:ring-primary-400/10 transition-all"
+              placeholder="Contoh: Berita Acara Rapat Internal"
+              value={saveLabel}
+              onChange={(e) => setSaveLabel(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+            />
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={showConfirmModal.show}
+          onClose={() => setShowConfirmModal({ ...showConfirmModal, show: false })}
+          title="Konfirmasi"
+          footer={(
+            <>
+              <button onClick={() => setShowConfirmModal({ ...showConfirmModal, show: false })} className="px-4 py-2 text-sm font-bold text-slate-500">Batal</button>
+              <button
+                onClick={confirmAction}
+                className={`px-6 py-2 rounded-xl text-sm font-bold shadow-lg text-white transition-all ${showConfirmModal.type === 'import' ? 'bg-primary-600 shadow-primary-200 hover:bg-primary-700' : 'bg-red-500 shadow-red-200 hover:bg-red-600'}`}
+              >
+                {showConfirmModal.type === 'import' ? 'Ya, Impor' : 'Ya, Hapus'}
+              </button>
+            </>
+          )}
+        >
+          <p className="text-sm text-slate-600 font-medium leading-relaxed">
+            {showConfirmModal.type === 'clear' && 'Anda yakin ingin menghapus SEMUA riwayat data? Tindakan ini tidak dapat dibatalkan.'}
+            {showConfirmModal.type === 'delete' && `Anda yakin ingin menghapus "${showConfirmModal.targetLabel}" dari riwayat?`}
+            {showConfirmModal.type === 'import' && `Anda yakin ingin memuat data "${showConfirmModal.targetItem?.label}"? Data yang belum tersimpan akan hilang.`}
+          </p>
+        </Modal>
+
+        {/* Notification */}
+        {notification && (
+          <Notification
+            message={notification.message}
+            type={notification.type}
+            onClose={() => setNotification(null)}
+          />
+        )}
+      </div>
+    </SubscriptionGuard>
   );
 }
 
